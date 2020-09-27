@@ -222,6 +222,61 @@
   });
 
 
+  //delete recode
+  $(document).on("click",".delete-btn",function(){
+
+    if(confirm("Do you really want to delete this record ? ")){
+      var studentId = $(this).data("id");
+      var obj = {sid : studentId};
+      var myJSON = JSON.stringify(obj);
+
+      var row = this;
+
+      $.ajax({
+      url : 'http://localhost/php/php-rest-api-html/api-delete.php',
+      type : "POST",
+      data : myJSON,
+      success : function(data){
+        message(data.message, data.status);
+
+        if(data.status == true){
+          $(row).closest("tr").fadeOut();
+        }
+      }
+    });
+
+    }
+
+  });
+
+  //Live Search Record
+  $("#search").on("keyup",function(){
+    var search_term = $(this).val();
+    $("#load-table").html("");
+    $.ajax({ 
+      url : 'http://localhost/php/php-rest-api-html/api-search.php?search=' + search_term,
+      type : "GET",
+      success : function(data){
+       if(data.status == false){
+          $("#load-table").append("<tr><td colspan='6'><h2>"+ data.message +"</h2></td></tr>");
+        }else{
+          $.each(data, function(key, value){ 
+            $("#load-table").append("<tr>" + 
+                                    "<td>" + value.id + "</td>" + 
+                                    "<td>" + value.student_name +"</td>" + 
+                                    "<td>" + value.age +"</td>" + 
+                                    "<td>" + value.city +"</td>" + 
+                                    "<td><button class='edit-btn' data-eid='"+ value.id + "'>Edit</button></td>" + 
+                                    "<td><button class='delete-btn' data-id='"+ value.id + "'>Delete</button></td>" + 
+                                    "</tr>");
+          });
+        }
+      }
+    });
+
+  });
+
+
  
  });
   
